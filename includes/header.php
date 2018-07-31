@@ -4,8 +4,6 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <link rel="stylesheet" href="style1.css">
-<link rel="stylesheet" href="google1.css">
-<link rel="stylesheet" href="cloud1.css">
 <style>
 html,body,h1,h2,h3,h4,h5 {font-family: "Raleway", sans-serif}
 .w3-bar-block .w3-bar-item {
