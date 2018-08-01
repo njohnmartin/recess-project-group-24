@@ -1,6 +1,6 @@
 <?php
- include_once 'includes/header.php';
- include_once 'db.php';
+include_once 'includes/header.php';
+include_once 'db.php';
 ?>
 
 <style>
@@ -50,18 +50,19 @@
     </div>
   </div>
 
-<?php 
-  $query = "SELECT COUNT(*) AS success_count, ( SELECT COUNT(*) FROM failed_jobs WHERE f.userid= s.userid FROM failed_jobs f ) AS failure_count FROM ready_jobsdb s GROUP BY userid";
-  // $query2 = "SELECT COUNT(*), userid FROM failed_jobs GROUP BY userid";
-
-  // $result1 = mysqli_query($conn, $query);
-  // $result2 = mysqli_query($conn, $query2);
-
-  // $row = 
-
-
-
- ?>
+<?php
+$query = <<<SQL
+  SELECT al.userid,
+    ( SELECT COUNT(*) FROM ready_jobs WHERE userid=al.userid ) as success_count,
+    ( SELECT COUNT(*) FROM failed_jobs WHERE userid=al.userid ) as failure_count
+  FROM (
+    SELECT DISTINCT(userid) FROM ready_jobs
+    UNION
+    SELECT DISTINCT(userid) FROM failed_jobs
+    ) AS al
+    GROUP BY al.userid
+SQL;
+?>
 
   <hr>
   <div class="w3-container">
@@ -76,12 +77,12 @@
       <div class="w3-container w3-center w3-padding w3-orange" style="width:50%">50%</div>
     </div>
 
-    
+
 
   <div class="w3-panel">
     <div class="w3-row-padding" style="margin:0 -16px">
            <div class="w3-twothird">
-        
+
 
 
         </div>
@@ -89,12 +90,12 @@
 
     </div>
   </div>
-  
 
 
 
-  
- 
+
+
+
   <!-- End page content -->
 </div>
 
