@@ -59,14 +59,16 @@ void string_trim(char *str)
 
 }
 
-int string_split(char *str, char *delimeter, char **tokens)
+int string_split(char *str, char *delimeter, int limit, char **tokens)
 {
 	int length = strlen(str);
 	int count = 0;
 	char *token, *saveptr, *listptr;
 
-	for (listptr = str; ; ++count, listptr = NULL)
-	{
+
+	for (listptr = str ; ; ++count, listptr = NULL)
+	{	
+		if (limit != 0 && count >= limit) break;
 		token = strtok_r(listptr, delimeter, &saveptr);
 		if (token == NULL) break;
 		string_trim(token);
@@ -79,7 +81,7 @@ void string_delete(char *str, char *token_str, char *response)
 {
 	int length = strlen(str);
 	char *tokens[24];
-	int count = string_split(token_str, ", ", tokens);
+	int count = string_split(token_str, ", ", 0, tokens);
 	int ch = 0;
 
 	for (int i = 0; i < length; ++i)
@@ -105,13 +107,13 @@ void string_replace(char *str, char *token_str, char *response)
 {
 	int length = strlen(str);
 	char *tokens[24], *num_token[2];
-	int count = string_split(token_str, ", ", tokens);
+	int count = string_split(token_str, ", ", 0, tokens);
 
 	strcpy(response, str);
 
 	for (int i = 0; i < count; ++i)
 	{
-		string_split(tokens[i], "-", num_token);
+		string_split(tokens[i], "-", 0, num_token);
 		int pos = atoi(num_token[0]) - 1;
 		response[pos] = num_token[1][0];
 	}

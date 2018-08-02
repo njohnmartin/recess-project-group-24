@@ -5,7 +5,7 @@
 #include <arpa/inet.h>
 #include <unistd.h>
 
-#define PORT 2053
+#define PORT 2052
 
 void read_from_server(int sockfd, char *response) {
     int bytes_read = 0;
@@ -53,35 +53,50 @@ int main()
     }
     printf("Connected\n");
     
+    printf("\n\nENTER YOUR ID: ");
+        // bzero(senderid, 1024);
+    // scanf("%s", senderid);
+    // send(sockfd,senderid, strlen(senderid), 0);
+    fgets(senderid, 1023, stdin);
+    int len = strlen(senderid);
+    if (senderid[len - 1] == '\n') 
+        senderid[--len] = '\0';
+    send(sockfd, senderid, len, 0);
+    
     while(1){
-        // printf("\n\nENTER YOUR ID:");
-        //bzero(senderid, 1024);
-    	//    fgets(senderid,1023,stdin);
+
         printf("\n\nEnter command: ");
-
-        //bzero(msg_buffer, 1024);
+        bzero(msg_buffer, 1024);
         fgets(msg_buffer, 1023, stdin);
-
         int len = strlen(msg_buffer);
         if (msg_buffer[len - 1] == '\n') 
             msg_buffer[--len] = '\0';
         int n = send(sockfd, msg_buffer, len, 0);
-           //send(sockfd,senderid,strlen(senderid),0);
+
 
         if (n < 0) {
             perror("ERROR writing to socket");
             exit(1);
         }
 
-        read_from_server(sockfd, resp_buffer);
+        if (!strncmp(msg_buffer, "exit", 4))
+            break;
 
-
-        while (strncmp(resp_buffer, "done", 4) != 0) {
-
-            printf("%s", resp_buffer);
+        while (1) {
             read_from_server(sockfd, resp_buffer);
-
+            int x = 0;
+            if ((x = strncmp(resp_buffer, "done", 4)) == 0)
+                break;
+            else {
+                printf("%s", resp_buffer);
+            }
         }
+
+        // while (strncmp(resp_buffer, "done", 3) != 0) {
+
+        //     read_from_server(sockfd, resp_buffer);
+
+        // }
     }
         
 
