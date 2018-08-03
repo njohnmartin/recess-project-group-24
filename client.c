@@ -5,9 +5,9 @@
 #include <arpa/inet.h>
 #include <unistd.h>
 
-#define PORT 2052
+#define PORT 2057
 
-void read_from_server(int sockfd, char *response) {
+int read_from_server(int sockfd, char *response) {
     int bytes_read = 0;
     bzero(response, 1024);
 
@@ -18,12 +18,15 @@ void read_from_server(int sockfd, char *response) {
             perror("Cannot read from the server");
             exit(1);
         }
+        else if (response[0] == 'd' || response[1] == 'd')
+            return 0;
         else if (n > 0) {
             bytes_read += n;
             if (response[bytes_read - 1] == '\n') break;
         }
     }
     response[bytes_read] = '\0';
+    return 1;
 }
 
 int main()
@@ -82,14 +85,16 @@ int main()
         if (!strncmp(msg_buffer, "exit", 4))
             break;
 
-        while (1) {
             read_from_server(sockfd, resp_buffer);
+        while (1) {
             int x = 0;
-            if ((x = strncmp(resp_buffer, "done", 4)) == 0)
+            if ((x = strncmp(resp_buffer, "done", 3)) == 0)
                 break;
-            else {
-                printf("%s", resp_buffer);
-            }
+            
+            printf("%s", resp_buffer);
+            if (!read_from_server(sockfd, resp_buffer))
+                break;
+            
         }
 
         // while (strncmp(resp_buffer, "done", 3) != 0) {

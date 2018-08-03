@@ -1,3 +1,10 @@
+<?php session_start(); 
+if (!isset($_SESSION['userid'])) {
+  header("location: login.php");
+}else {
+ echo  $_SESSION['userid'];
+}
+ ?>
 <!DOCTYPE html>
 <html>
 <title>admin web interface</title>
@@ -18,8 +25,24 @@ html,body,h1,h2,h3,h4,h5 {font-family: "Raleway", sans-serif}
     float: none;
     outline: 0;
 }
+
+.data-table {
+  margin: 15px 20px;
+  border-radius: 5px;
+}
+
+.data-table thead {
+  background-color: #4f4f4f;
+  color: #fff;
+}
+
+.data-table td, .data-table th {
+  padding: 5px 10px;
+}
+
+
 </style>
-<body style = "background-image:url(uni2.jpg)" class="w3-light-grey">
+<body style = "background-image:url()" class="w3-light-grey">
 
 <!-- Top container -->
 <h4><a href="logout.php" style="float: right;"> logout </a></h4>
@@ -52,10 +75,11 @@ html,body,h1,h2,h3,h4,h5 {font-family: "Raleway", sans-serif}
   <p style="text-align: center">
   <div class="w3-bar-block">
     <a href="#" class="w3-bar-item w3-button w3-padding-16 w3-hide-large w3-dark-grey w3-hover-black" onclick="w3_close()" title="close menu"><i class="fa fa-remove fa-fw"></i>  Close Menu</a>
-    <a href="admin.php" class="w3-bar-item w3-button w3-padding w3-green"><i class="fa fa-eye fa-fw"></i>  Home</a>
+    <a href="index.php" class="w3-bar-item w3-button w3-padding w3-green"><i class="fa fa-eye fa-fw"></i>  Home</a>
     <a href="ready_list.php" class="w3-bar-item w3-button w3-padding w3-green"><i class="fa fa-eye fa-fw"></i>  READY JOBS</a>
-    <a href="waiting_jobs.php" class="w3-bar-item w3-button w3-padding w3-green"><i class="fa fa-users fa-fw"></i>WAITING JOBS <br>FOR PROCESSING</a>
-    <a href="" class="w3-bar-item w3-button w3-padding w3-green"><i class="fa fa-diamond fa-fw"></i>  WAITING JOBS <br>WITH PRIORITY</a>
+    <a href="waiting_jobs.php" class="w3-bar-item w3-button w3-padding w3-green"><i class="fa fa-users fa-fw"></i>WAITING JOBS</a>
+   
+    <a href="failed_jobs.php" class="w3-bar-item w3-button w3-padding w3-green"><i class="fa fa-diamond fa-fw"></i>  FAILED JOBS</a>
     
     <br><br>
   </div>

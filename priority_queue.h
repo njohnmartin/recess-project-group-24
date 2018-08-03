@@ -18,7 +18,7 @@ void process_queue();
 
 int make_task(int sender, char *message, int clientsock, Task *t);
 
-void enqueue_task(Task t);
+int enqueue_task(Task t);
 
 int get_sender(char *senderid);
 

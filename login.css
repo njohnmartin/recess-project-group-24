@@ -1,0 +1,44 @@
+body{
+	margin:0;
+	padding:0;
+	background:url(educ.jpg);
+	background-size:cover;
+	
+	font-family: Agency fb;
+}
+.login-box{
+	width: 320px;
+	height: 420px;
+	background: rgba(0,0,0,0.5);
+	color: #fff;
+	top: 50%;
+	left: 50%;
+	position: absolute;
+	transform: translate(-50%,-50%);
+	box-sizing: border-box;
+	padding: 70px 30px;
+
+}
+.photo {
+	width: 100px;
+	height: 100px;
+	border-radius: 50%;
+	position: absolute;
+	top: -50px;
+	left: calc(50% - 50px);
+	
+} #df{
+	color: red;
+	font-size: 18px;
+	
+	
+}
+#e:hover{
+	background-color: limegreen;
+	
+}
+#msg{background-color:limegreen; color:white; padding:30px;}
+
+
+
+

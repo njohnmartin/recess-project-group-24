@@ -12,7 +12,7 @@
 #include "priority_queue.h"
 
 
-#define PORT 2052
+#define PORT 2057
 
 
 
@@ -47,18 +47,23 @@ void handle_client(int clientsock)
 		char *tasks[24];
 
 		int count = string_split(message, ";", 0, tasks);
+		int good = 0;
 		printf("Received %d commands.\n", count);
 
 		for (int i = 0; i < count; ++i)
 		{
 			Task t;
 			if (make_task(sender, tasks[i], pid, &t)) {
-				enqueue_task(t);
+				if (enqueue_task(t)) good++;
+				else {
+					printf("Job failed. sorry\n");
+					send(clientsock, "Job has failed. bye\n\n", 22, 0);
+				}
 			}
 		}
 
 
-		for (int i = 0; i < count; ++i)
+		for (int i = 0; i < good; ++i)
 		{
 			while (*shm != '*')
 				sleep(1);
@@ -69,7 +74,7 @@ void handle_client(int clientsock)
 			send(clientsock, response, strlen(response), 0);
 		}
 
-		send(clientsock, "done\n", 5, 0);
+		send(clientsock, "done\n\n\n", 5, 0);
 		bzero(message, MAX_STRING);
 		
 		bytes_read = recv(clientsock, message, MAX_STRING - 1, 0);

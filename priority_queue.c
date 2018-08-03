@@ -85,8 +85,6 @@ void process_queue()
 		//fprintf(waiting_jobs, "%s", result);
 		fclose(waiting_jobs);
 
-		
-
 		if (busycount > 0) {
 			Task t;
 			get_highest_priority_task(&t);
@@ -143,13 +141,13 @@ void process_queue()
 			
 
 			delete_line_from_file("waiting_jobs.csv", t.linenum);
-			sleep(4);
+			
 
 			time_t now = time(NULL);
 			struct tm *dt = localtime(&now);
 
 			FILE *ready_jobs = fopen("ready_jobs.csv", "a");
-			fprintf(ready_jobs, "%s ,%s, %s,", "U002", t.command, result);
+			fprintf(ready_jobs, "%s ,%s, %s,", t.senderID, t.command, result);
 			fprintf(ready_jobs, "%ld, ", end.tv_nsec - start.tv_nsec);
 			fprintf(ready_jobs, "%02d/%02d/%04d, ", dt->tm_mday, dt->tm_mon+1, dt->tm_year+1900);
 			fprintf(ready_jobs, "%02d:%02d:%02d\n", dt->tm_hour, dt->tm_min, dt->tm_sec);
@@ -190,8 +188,30 @@ int calculate_priority(Task task)
 	return priority;
 }
 
-void enqueue_task(Task t)
+int enqueue_task(Task t)
 {
+	
+	if (strlen(t.taskString) > 50) {
+
+		time_t now = time(NULL);
+		struct tm *dt = localtime(&now);
+
+
+		FILE *failed_jobs = fopen("failed_jobs.csv", "a");
+		fprintf(failed_jobs, "%s, %s, %s, String length longer than 50, ", 
+			t.senderID, 
+			t.command, 
+			t.taskString 
+			
+		);
+		fprintf(failed_jobs, "%02d/%02d/%04d, ", dt->tm_mday, dt->tm_mon+1, dt->tm_year+1900);
+		fprintf(failed_jobs, "%02d:%02d:%02d\n", dt->tm_hour, dt->tm_min, dt->tm_sec);
+				
+		fclose(failed_jobs);
+
+		return 0;
+	}
+
 	t.priority = calculate_priority(t);
 	user_job_count[t.sender]++;
 	
@@ -208,12 +228,14 @@ void enqueue_task(Task t)
 	fclose(waiting_job);
 	printf("Queued %s\n", t.command);
 
+	return 1;
+
 }
 
 int make_task(int sender, char *message, int pid, Task *t)
 {
 	char *tokens[24];
-	int count = string_split(message, " ", 2, tokens);
+	int count = string_split(message, " ", 3, tokens);
 	t->pid = pid;
 	t->sender = sender;
 
