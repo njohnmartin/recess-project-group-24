@@ -31,3 +31,4 @@ Open any number of client programs in a different terminal
 ./client
 ```
 ![Run Client](/screenshots/runclient.png?raw=true "Starting the string task client")  
+![Send Commands](/screenshots/sendcommands.png?raw=true "Sending commands")  
