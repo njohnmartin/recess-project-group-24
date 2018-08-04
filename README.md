@@ -19,13 +19,15 @@ gcc -o client client.c
 ```  
 
 ## Running 
-Start the server and leave it running then you can open any number of client programs in a different terminal
+Start the server and leave it running 
 ```
 ./server
 ```
+
+![Run Server](/screenshots/runserver.png?raw=true "Starting the string task server")  
+
+Open any number of client programs in a different terminal
 ```
 ./client
 ```
-
-![Run Server](/screenshots/runserver.png?raw=true "Starting the string task server")  
 ![Run Client](/screenshots/runclient.png?raw=true "Starting the string task client")  
