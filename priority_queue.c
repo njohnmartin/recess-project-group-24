@@ -40,6 +40,11 @@ void delete_line_from_file(char *filename, int linenum)
 
 void process_queue()
 {
+
+	FILE *f = fopen("waiting_jobs.csv", "w");
+	fclose(f);
+
+	
 	printf("Process Queue process started\n");
 	while (1) 
 	{
@@ -127,7 +132,6 @@ void process_queue()
 			}
 
 			clock_gettime(CLOCK_MONOTONIC, &end);
-			printf("Done\n");
 
 			char *shm; int shmid;
 			if ((shmid = shmget(t.pid, MAX_STRING, 0666)) < 0)
@@ -190,19 +194,34 @@ int calculate_priority(Task task)
 
 int enqueue_task(Task t)
 {
-	
-	if (strlen(t.taskString) > 50) {
+	int failed = 0;
+	char reason[100];
+	time_t now = time(NULL);
+	struct tm *dt = localtime(&now);
+		
+	if (strcmp(t.command, "rev") &&
+		strcmp(t.command, "replace") &&
+		strcmp(t.command, "double") &&
+		strcmp(t.command, "encrypt") &&
+		strcmp(t.command, "decrypt") &&
+		strcmp(t.command, "delete")  ) {
 
-		time_t now = time(NULL);
-		struct tm *dt = localtime(&now);
+		failed = 1;
+		sprintf(reason, "Unknown command %s", t.command);
 
+	}
+	else if (strlen(t.taskString) > 50) {
+		failed = 1;
+		strcpy(reason, "String length longer than 50");
+	}
 
+	if (failed) {
 		FILE *failed_jobs = fopen("failed_jobs.csv", "a");
-		fprintf(failed_jobs, "%s, %s, %s, String length longer than 50, ", 
+		fprintf(failed_jobs, "%s, %s, %s, %s, ", 
 			t.senderID, 
 			t.command, 
-			t.taskString 
-			
+			t.taskString ,
+			reason
 		);
 		fprintf(failed_jobs, "%02d/%02d/%04d, ", dt->tm_mday, dt->tm_mon+1, dt->tm_year+1900);
 		fprintf(failed_jobs, "%02d:%02d:%02d\n", dt->tm_hour, dt->tm_min, dt->tm_sec);
@@ -226,8 +245,6 @@ int enqueue_task(Task t)
 		t.pid
 	);
 	fclose(waiting_job);
-	printf("Queued %s\n", t.command);
-
 	return 1;
 
 }
@@ -239,7 +256,7 @@ int make_task(int sender, char *message, int pid, Task *t)
 	t->pid = pid;
 	t->sender = sender;
 
-	if (count > 0) {
+	if (count > 1) {
 		strcpy(t->command, tokens[0]);
 		strcpy(t->taskString, tokens[1]);
 		strcpy(t->senderID, users[sender]); 

@@ -8,13 +8,20 @@
 #include <unistd.h>
 #include <sys/ipc.h>
 #include <sys/shm.h>
+#include <signal.h>
 #include "string_funcs.h"
 #include "priority_queue.h"
 
 
-#define PORT 2057
+#define PORT 2056
 
+int clientsock;
 
+void quit_client(int signum)
+{
+	close(clientsock);
+	exit(0);
+}
 
 void handle_client(int clientsock)
 {
@@ -27,11 +34,10 @@ void handle_client(int clientsock)
     
    	// Begin talking now
     recv(clientsock, senderid, 24, 0);
-    printf("\n\nUser ID: %s\n", senderid);
+    printf("User ID: %s\n", senderid);
 	
 	sender = get_sender(senderid);
-	bzero(message, MAX_STRING);
-	bytes_read = recv(clientsock, message, MAX_STRING - 1, 0);
+	
 
 	char *shm;
 	int shmid;
@@ -42,7 +48,10 @@ void handle_client(int clientsock)
 	if ((shm = shmat(shmid, 0, 0)) == (char *) -1)
 		fprintf(stderr, "Err serv shmat\n");
     	
-    while (strncmp(message, "exit", 4)) { 
+	bzero(message, MAX_STRING);
+	bytes_read = recv(clientsock, message, MAX_STRING - 1, 0);
+    
+    while (strncmp(message, "exit", 4) && bytes_read > 0) { 
 
 		char *tasks[24];
 
@@ -57,7 +66,8 @@ void handle_client(int clientsock)
 				if (enqueue_task(t)) good++;
 				else {
 					printf("Job failed. sorry\n");
-					send(clientsock, "Job has failed. bye\n\n", 22, 0);
+					sprintf(response, "%s job has failed.\n", t.command);
+					send(clientsock, response, strlen(response), 0);
 				}
 			}
 		}
@@ -74,9 +84,10 @@ void handle_client(int clientsock)
 			send(clientsock, response, strlen(response), 0);
 		}
 
-		send(clientsock, "done\n\n\n", 5, 0);
-		bzero(message, MAX_STRING);
-		
+		sleep(1);
+		send(clientsock, "done\n", 5, 0);
+
+		bzero(message, MAX_STRING);	
 		bytes_read = recv(clientsock, message, MAX_STRING - 1, 0);
 	}
 
@@ -93,7 +104,7 @@ int main()
      * 	B - Begin talking (recv, send)
      */
 
-	int serversock, clientsock, pid, pid2;
+	int serversock, pid, pid2;
 	socklen_t client_length;
 	struct sockaddr_in server_addr;
 
@@ -149,7 +160,8 @@ int main()
 		if (pid == 0) {
 		 /* This is the child process */
 			close(serversock);
-			
+			printf("Starting process %d\n", getpid());
+			signal(SIGINT, quit_client);
 			handle_client(clientsock);
 
 			exit(0);
