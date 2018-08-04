@@ -30,7 +30,6 @@ int main()
 {
     int sockfd;
     struct sockaddr_in server_addr;
-    struct hostent *server;
     char msg_buffer[1024];
     char senderid[1024];
     char resp_buffer[1024];

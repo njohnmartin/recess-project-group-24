@@ -61,7 +61,6 @@ void string_trim(char *str)
 
 int string_split(char *str, char *delimeter, int limit, char **tokens)
 {
-	int length = strlen(str);
 	int count = 0;
 	char *token, *saveptr, *listptr;
 
@@ -105,7 +104,6 @@ void string_delete(char *str, char *token_str, char *response)
 
 void string_replace(char *str, char *token_str, char *response)
 {
-	int length = strlen(str);
 	char *tokens[24], *num_token[2];
 	int count = string_split(token_str, ", ", 0, tokens);
 
@@ -146,7 +144,7 @@ void string_encrypt(char *str, char *response)
 	int pos = 0;
 
 	for (int i = 0; i < length; ++i) {
-		int count = 0, mid = 0;
+		int count = 0;
 		int chval = get_letter_value(str[i]);
 
 		while (chval > 9) {

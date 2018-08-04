@@ -59,12 +59,6 @@ void process_queue()
 		
 		while (fgets(line, 255, waiting_jobs) != NULL)  {
 			Task t;
-			char command[12];
-			char taskString[80];
-			char taskStrOptions[30];
-			char resultStr[1200]; 
-			char senderID[12];
-
 			char *tokens[24];
 
 			int count = string_split(line, ",", 0, tokens);
@@ -154,8 +148,8 @@ void process_queue()
 			fprintf(ready_jobs, "%s ,%s, %s,", t.senderID, t.command, result);
 			fprintf(ready_jobs, "%ld, ", end.tv_nsec - start.tv_nsec);
 			fprintf(ready_jobs, "%02d/%02d/%04d, ", dt->tm_mday, dt->tm_mon+1, dt->tm_year+1900);
-			fprintf(ready_jobs, "%02d:%02d:%02d\n", dt->tm_hour, dt->tm_min, dt->tm_sec);
-			//fprintf(ready_jobs, "%s", result);
+			fprintf(ready_jobs, "%02d:%02d:%02d\n, ", dt->tm_hour, dt->tm_min, dt->tm_sec);
+			fprintf(ready_jobs, "%s", result);
 			fclose(ready_jobs);
 
 		}
